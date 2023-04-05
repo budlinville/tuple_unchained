@@ -3,6 +3,11 @@ from graphene_django import DjangoObjectType
 from decimal import Decimal
 
 from .models import BalanceSheet
+from api.alpha_vantage.fundamentals import get_balance_sheet
+
+# TODO: Move this to a utils file
+def Price(value):
+    return round(Decimal(value), 6)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Types
@@ -16,11 +21,17 @@ class BalanceSheetType(DjangoObjectType):
 # Queries
 #-----------------------------------------------------------------------------------------------------------------------
 class Query(graphene.ObjectType):
-    balance_sheet = graphene.Field(BalanceSheetType)
+    balance_sheet = graphene.Field(BalanceSheetType, ticker=graphene.String(required=True))
 
     def resolve_balance_sheet(self, info, **kwargs):
-        balance_sheet = BalanceSheet(cash=Decimal(200.0), current_liabilities=round(Decimal(788.9),6))
-        # balance_sheet.cash = Decimal(2000.23)
-        # balance_sheet.current_liabilities = Decimal(1502.33)
+        tkr = kwargs.get('ticker')
+        alpha_vantage_response = get_balance_sheet(tkr)
+
+        balance_sheet = BalanceSheet(
+            ticker=tkr,
+            cash=Price(alpha_vantage_response['cashAndCashEquivalentsAtCarryingValue']),
+            accounts_receivable=Price(alpha_vantage_response['currentNetReceivables']),
+            current_liabilities = Price(alpha_vantage_response['totalLiabilities']),
+        )
         
         return balance_sheet
