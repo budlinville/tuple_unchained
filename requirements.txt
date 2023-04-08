@@ -1,0 +1,7 @@
+django
+graphene
+graphene-django
+graphql-core
+graphql-relay
+python-dotenv==1.0.0
+requests

@@ -33,5 +33,5 @@ class Query(graphene.ObjectType):
             accounts_receivable=Price(alpha_vantage_response['currentNetReceivables']),
             current_liabilities = Price(alpha_vantage_response['totalLiabilities']),
         )
-        
+
         return balance_sheet
