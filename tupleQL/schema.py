@@ -1,6 +1,7 @@
 import graphene
 from graphene_django import DjangoObjectType
 from decimal import Decimal
+import graphql_jwt
 
 from .models import BalanceSheet
 from api.alpha_vantage.fundamentals import get_balance_sheet
@@ -35,3 +36,11 @@ class Query(graphene.ObjectType):
         )
 
         return balance_sheet
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Mutations
+#-----------------------------------------------------------------------------------------------------------------------
+class Mutation:
+    token_auth = graphql_jwt.ObtainJSONWebToken.Field()
+    verify_token = graphql_jwt.Verify.Field()
